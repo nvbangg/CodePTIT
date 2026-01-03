@@ -1,0 +1,7 @@
+SELECT p.MAPHG,
+    p.TENPHG,
+    ROUND(AVG(n.LUONG), 2) AS "Lương trung bình"
+FROM PHONGBAN p
+    JOIN NHANVIEN n ON p.MAPHG = n.PHG
+GROUP BY p.MAPHG,
+    p.TENPHG;

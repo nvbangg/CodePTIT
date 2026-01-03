@@ -1,0 +1,2 @@
+SELECT (SELECT recycling_rate FROM recycling_rates WHERE year = 2019 AND material = 'glass') 
+ - (SELECT recycling_rate FROM recycling_rates WHERE year = 2018 AND material = 'glass') AS rate_difference;

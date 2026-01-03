@@ -1,0 +1,36 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define endl '\n'
+#define ll long long
+vector<ll> f(55);
+void prepare()
+{
+    f[1] = 1;
+    for (int i = 2; i < f.size(); ++i)
+        f[i] = f[i - 1] * 2;
+}
+void testCase()
+{
+    ll n, k;
+    cin >> n >> k;
+    for (int i = n; i >= 1; i--)
+    {
+        if (k > f[i])
+            k -= f[i];
+        else if (k == f[i])
+        {
+            cout << i << endl;
+            return;
+        }
+    }
+}
+int main()
+{
+    ios_base::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+    prepare();
+    int T = 1;
+    cin >> T;
+    while (T--)
+        testCase();
+    return 0;
+}

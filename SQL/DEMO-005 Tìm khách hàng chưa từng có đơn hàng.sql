@@ -1,0 +1,5 @@
+SELECT c.CustID, c.CustomerName 
+FROM CUSTOMER c 
+LEFT JOIN SALEORDER s ON c.CustID = s.CustID 
+WHERE s.OrderID IS NULL
+ORDER BY c.CustID;
