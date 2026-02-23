@@ -12,9 +12,3 @@
 [submodule "SQL/BTL_CSDL"]
 	path = SQL/BTL_CSDL
 	url = https://github.com/nvbangg/BTL_CSDL.git
-[submodule "PTIT_Docs"]
-	path = PTIT_Docs
-	url = https://github.com/nvbangg/PTIT_Docs.git
-[submodule "JAVA/BTL_OOP"]
-	path = JAVA/BTL_OOP
-	url = https://github.com/nvbangg/BTL_OOP
