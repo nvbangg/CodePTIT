@@ -4,7 +4,8 @@
 
 ### Cấu trúc chung:
 ```java
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 
 public class TCP {
     public static void main(String[] args) throws Exception {
@@ -18,7 +19,7 @@ public class TCP {
 
         // 5. Xử lý logic theo yêu cầu đề bài
 
-        // 6. Gửi kết quả về Server
+        // 6. Gửi kết quả về Server (tương tự bước 3)
 
         // 7. Đóng kết nối
         socket.close();
@@ -82,15 +83,15 @@ public class TCP {
         // Nhận đối tượng từ Server và ép kiểu về đúng Class của đề bài
         Student student = (Student) ois.readObject();
 ```
-- Lớp đối tượng (ví dụ: `Student`, `Product`...) bắt buộc phải khai báo `implements Serializable`
+- Lớp đối tượng (ví dụ: `Student`, `Customer`...) bắt buộc phải có `implements Serializable` và nằm đúng package (ví dụ `package TCP;`) nếu đề bài chỉ định
 - Bắt buộc tạo `ObjectOutputStream` trước `ObjectInputStream`: Khi `new ObjectInputStream`, Java sẽ chặn chương trình để đợi đọc header từ đối tác. Tạo `ObjectOutputStream` trước sẽ phát ngay header sang Server, tránh việc cả hai đầu cùng đứng chờ nhau gây treo ứng dụng (deadlock).
 
 ## UDP
 
 ### Cấu trúc chung:
 ```java
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.io.*;
+import java.net.*;
 
 public class UDP {
     public static void main(String[] args) throws Exception {
@@ -99,14 +100,13 @@ public class UDP {
         InetAddress ip = InetAddress.getByName("36.50.135.242");
         int port = 2207;
 
-        // 2. Gửi mã SV; Mã câu hỏi
+        // 2. Gửi mã SV; Mã câu hỏi (chú ý: đề UDP PTIT thường có dấu ";" ở đầu)
         byte[] req = ";B23DCCN067;toft6ekh".getBytes();
         socket.send(new DatagramPacket(req, req.length, ip, port));
 
         // 3. Nhận gói tin từ Server về (Dùng chung cho cả 2 dạng)
         byte[] buff = new byte[2048]; // 2048 byte bao trọn cả chuỗi lẫn Object
-        DatagramPacket dp = new DatagramPacket(buff, buff.length);
-        socket.receive(dp);
+        socket.receive(new DatagramPacket(buff, buff.length));
 
         // --- BƯỚC 4, 5, 6: XỬ LÝ & TRẢ KẾT QUẢ THEO 2 DẠNG BÊN DƯỚI ---
 
@@ -118,20 +118,26 @@ public class UDP {
 ### 1. UDP String / Data Type
 ```java
         // Trích xuất chuỗi từ dp đã nhận ở trên
-        String s = new String(dp.getData(), 0, dp.getLength()).trim();
+        String s = new String(buff, 0, buff.length).trim();
+        String[] parts = s.split(";", 2);
+        String requestId = parts[0].trim();
+        String data = parts[1].trim();
 
         // Xử lý logic...
-        String res = "...";
 
         // Gửi kết quả về Server
+        String res = requestId + ";" + "...";
         byte[] out = res.getBytes();
         socket.send(new DatagramPacket(out, out.length, ip, port));
 ```
 
 ### 2. UDP Object
 ```java
+        byte[] requestId = new byte[8];
+        System.arraycopy(buff, 0, requestId, 0, 8);
+
         // Đọc Object từ dp đã nhận ở trên
-        ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(dp.getData(), 0, dp.getLength()));
+        ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(buff, 8, buff.length - 8));
         Student student = (Student) ois.readObject();
 
         // Xử lý logic trên student...
@@ -142,6 +148,18 @@ public class UDP {
         oos.writeObject(student);
         oos.flush();
 
-        byte[] out = baos.toByteArray();
+        byte[] objBytes = baos.toByteArray();
+        byte[] out = new byte[8 + objBytes.length]; // Ghép 8 byte requestId + mảng byte Object rồi gửi về Server
+        System.arraycopy(requestId, 0, out, 0, 8);
+        System.arraycopy(objBytes, 0, out, 8, objBytes.length);
         socket.send(new DatagramPacket(out, out.length, ip, port));
 ```
+- `System.arraycopy(src, srcPos, dest, destPos, length)`
+        - src: Mảng chứa dữ liệu ban đầu cần lấy đi copy.
+        - srcPos: Vị trí bắt đầu lấy dữ liệu trên mảng nguồn.
+        - dest: Mảng nơi dữ liệu copy được dán vào.
+        - destPos: Vị trí (chỉ số index) bắt đầu dán dữ liệu vào mảng đích.
+        - length: Số lượng phần tử (số byte) cần sao chép.
+- `ByteArrayInputStream(mảng byte, vị trí bắt đầu, ĐỘ DÀI CẦN LẤY)`
+
+
