@@ -51,7 +51,7 @@ public class TCP {
         // Nhận mảng byte từ Server
         byte[] buff = new byte[1024];
         int bytes = is.read(buff); // là số lượng byte thực tế nhận được
-        String str = new String(buff, 0, bytes).trim();
+        String str = new String(buff, 0, bytes).trim(); // Không được dùng buff.length để tạo String vì buff có thể chưa được lấp đầy.
 ```
 - `read(buff)` ở đây là đọc dữ liệu từ mạng để đổ vào mảng buff.
 - Nếu `write(buff)` thì sẽ là lấy dữ liệu từ buff để ghi ra đĩa/server
@@ -68,7 +68,7 @@ public class TCP {
         int n = dis.readInt();
         String str = dis.readUTF();
 ```
-- `writeUTF()` tự động gắn thêm 2 byte biểu diễn độ dài chuỗi vào phần đầu gói tin, phía nhận dùng `readUTF()` sẽ tự động đọc đúng độ dài chuỗi mà không cần ký tự xuống dòng \n. (Không thay thế được bằng \n mà buộc dùng UTF)
+- `writeUTF()` ghi chuỗi theo định dạng của DataOutputStream, phía nhận dùng `readUTF()` sẽ tự động đọc đúng độ dài chuỗi mà không cần ký tự xuống dòng \n. (Không thay thế được bằng \n mà buộc dùng UTF)
 - ghi số nguyên sẽ là: `dos.writeInt(num)`
 
 ### 4. TCP Object Stream
@@ -118,7 +118,7 @@ public class UDP {
 ### 1. UDP String / Data Type
 ```java
         // Trích xuất chuỗi từ dp đã nhận ở trên
-        String s = new String(buff, 0, buff.length).trim();
+        String s = new String(buff);
         String[] parts = s.split(";", 2);
         String requestId = parts[0].trim();
         String data = parts[1].trim();
