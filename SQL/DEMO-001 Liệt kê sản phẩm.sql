@@ -1,3 +1,0 @@
-SELECT ProductID, Name 
-FROM PRODUCT
-WHERE Price > 100;

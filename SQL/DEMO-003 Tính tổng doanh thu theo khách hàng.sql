@@ -1,3 +1,0 @@
-SELECT CustID, SUM(Total) AS TotalRevenue 
-FROM SALEORDER
-GROUP BY CustID;

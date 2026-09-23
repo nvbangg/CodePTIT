@@ -1,4 +1,0 @@
-INSERT INTO ALUMNI(SID, FullName) 
-SELECT SID, FullName 
-FROM STUDENT 
-WHERE Graduated = 1;
