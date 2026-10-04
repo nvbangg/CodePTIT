@@ -1,1 +1,1 @@
-### Đã di chuyển sang [nvbangg/PTIT_Docs](https://github.com/nvbangg/PTIT-Docs)
+### Đã di chuyển sang [nvbangg/PTIT-Docs](https://github.com/nvbangg/PTIT-Docs)
